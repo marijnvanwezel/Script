@@ -1,0 +1,26 @@
+{
+	"name": "Pybunto",
+	"author": [
+		"Marijn van Wezel"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:Pybunto",
+	"descriptionmsg": "pybunto-desc",
+	"license-name": "GPL-2.0-or-later AND MIT",
+	"type": "parserhook",
+	"requires": {
+		"MediaWiki": ">= 1.38.0",
+		"extensions": {
+			"Scribunto": "*"
+		}
+	},
+	"MessagesDirs": {
+		"Pybunto": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\Pybunto\\": "includes/"
+	},
+	"callback": "MediaWiki\\Extension\\Pybunto\\Hooks::onRegistration",
+	"manifest_version": 2
+}
