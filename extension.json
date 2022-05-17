@@ -1,26 +1,51 @@
 {
-	"name": "Pybunto",
+	"name": "FFI",
+	"type": "parserhook",
+	"version": "1.0.0",
 	"author": [
 		"Marijn van Wezel"
 	],
-	"url": "https://www.mediawiki.org/wiki/Extension:Pybunto",
-	"descriptionmsg": "pybunto-desc",
-	"license-name": "GPL-2.0-or-later AND MIT",
-	"type": "parserhook",
+	"url": "https://www.mediawiki.org/wiki/Extension:FFI",
+	"descriptionmsg": "ffi-desc",
+	"license-name": "GPL-2.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.38.0",
-		"extensions": {
-			"Scribunto": "*"
+		"MediaWiki": ">= 1.35.0",
+		"platform": {
+			"php": ">=7.3"
 		}
 	},
 	"MessagesDirs": {
-		"Pybunto": [
+		"FFI": [
 			"i18n"
 		]
 	},
-	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\Pybunto\\": "includes/"
+	"ExtensionMessagesFiles": {
+		"FFIMagic": "i18n/FFI.i18n.php"
 	},
-	"callback": "MediaWiki\\Extension\\Pybunto\\Hooks::onRegistration",
+	"config": {
+		"FFIEnabledEngines": {
+			"value": {
+				"py": {
+					"name": "Python",
+					"file": "engines/python/engine.py"
+				}
+			}
+		}
+	},
+	"namespaces": [
+		{
+			"id": 7670,
+			"constant": "NS_SCRIPT",
+			"name": "Script"
+		},
+		{
+			"id": 7671,
+			"constant": "NS_SCRIPT_TALK",
+			"name": "Script_talk"
+		}
+	],
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\FFI\\": "includes/"
+	},
 	"manifest_version": 2
 }
