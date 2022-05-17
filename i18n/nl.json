@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Marijn van Wezel"
+		]
+	},
+	"ffi-desc": "Framework voor het inbedden van meerdere scripttalen in MediaWiki-pagina's",
+	"ffi-invalid-engine-specification-exception": "De specificatie voor de engine '$1' is ongeldig ($2).",
+	"ffi-invalid-engine-specification-reason-missing-attribute": "attribuut '$1' ontbreekt",
+	"ffi-invalid-engine-specification-reason-nonexistent-class": "de class '$1' bestaat niet",
+	"ffi-no-such-engine-exception": "De engine '$1' bestaat niet."
+}

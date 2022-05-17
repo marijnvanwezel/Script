@@ -23,11 +23,10 @@
 		"FFIMagic": "i18n/FFI.i18n.php"
 	},
 	"config": {
-		"FFIEnabledEngines": {
+		"FFIEngines": {
 			"value": {
 				"py": {
-					"name": "Python",
-					"file": "engines/python/engine.py"
+					"class": "MediaWiki\\Extension\\FFI\\Engines\\Python\\PythonEngine"
 				}
 			}
 		}
