@@ -48,10 +48,10 @@ class EngineFactory {
 	 *
 	 * A system administrator may add or remove engines through the $wgFFIEngines configuration parameter.
 	 *
-	 * @param string $ext
+	 * @param string $ext The engine to construct
 	 * @return FFIEngine
 	 * @throws NoSuchEngineException When the requested engine does not exist
-	 * @throws InvalidEngineSpecificationException
+	 * @throws InvalidEngineSpecificationException When the specification of the requested engine is invalid
 	 */
 	public function newEngine( string $ext ): FFIEngine {
 		if ( !isset( $this->engines[$ext] ) ) {
@@ -74,16 +74,18 @@ class EngineFactory {
 			);
 		}
 
-		if ( !class_exists( $engineSpec["class"] ) ) {
+		$engineClass = $engineSpec["class"];
+
+		if ( !class_exists( $engineClass ) ) {
 			throw new InvalidEngineSpecificationException(
 				$ext,
 				'ffi-invalid-engine-specification-reason-nonexistent-class',
-				[$engineSpec["class"]],
-				"the class '{$engineSpec["class"]} does not exist"
+				[$engineClass],
+				"the class '{$engineClass} does not exist"
 			);
 		}
 
 		// Construct the engine class
-		return new $engineSpec["class"]( $engineSpec );
+		return new $engineClass( $engineSpec );
 	}
 }
