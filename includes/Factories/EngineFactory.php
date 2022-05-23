@@ -19,11 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-namespace MediaWiki\Extension\FFI;
+namespace MediaWiki\Extension\FFI\Factories;
 
-use MediaWiki\Extension\FFI\Engines\FFIEngine;
+use MediaWiki\Extension\FFI\Engines\Engine;
 use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
 use MediaWiki\Extension\FFI\Exceptions\NoSuchEngineException;
+use Title;
 
 class EngineFactory {
 	/**
@@ -39,6 +40,28 @@ class EngineFactory {
 	}
 
 	/**
+	 * Returns the engine appropriate for the given Title.
+	 *
+	 * @param Title $title
+	 * @return Engine|null
+	 * @throws InvalidEngineSpecificationException
+	 */
+	public function newFromTitle( Title $title ): ?Engine {
+		if ( !$title->inNamespace( NS_SCRIPT ) ) {
+			return null;
+		}
+
+		$titleParts = explode( '.', $title->getBaseText() );
+		$titleExt = end( $titleParts );
+
+		try {
+			return $this->newFromExt( $titleExt );
+		} catch ( NoSuchEngineException $exception ) {
+			return null;
+		}
+	}
+
+	/**
 	 * Returns the engine that handles the given file extension. The language in which a file is written is
 	 * identified by their file extension and is therefore also used as the identifier for the corresponding
 	 * engine.
@@ -49,11 +72,11 @@ class EngineFactory {
 	 * A system administrator may add or remove engines through the $wgFFIEngines configuration parameter.
 	 *
 	 * @param string $ext The engine to construct
-	 * @return FFIEngine
+	 * @return Engine
 	 * @throws NoSuchEngineException When the requested engine does not exist
 	 * @throws InvalidEngineSpecificationException When the specification of the requested engine is invalid
 	 */
-	public function newEngine( string $ext ): FFIEngine {
+	public function newFromExt( string $ext ): Engine {
 		if ( !isset( $this->engines[$ext] ) ) {
 			throw new NoSuchEngineException( $ext );
 		}

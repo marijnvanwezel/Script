@@ -21,6 +21,8 @@
 
 namespace MediaWiki\Extension\FFI;
 
+use MediaWiki\Extension\FFI\Factories\EngineFactory;
+use MediaWiki\Extension\FFI\Factories\ScriptFactory;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Services\ServiceContainer;
 
@@ -43,6 +45,10 @@ final class FFIServices {
 
 	public static function getEngineFactory( ?ServiceContainer $services = null ): EngineFactory {
 		return self::getService( "EngineFactory", $services );
+	}
+
+	public static function getScriptFactory( ?ServiceContainer $services = null ): ?ScriptFactory {
+		return self::getService( "ScriptFactory", $services );
 	}
 
 	private static function getService( string $service, ?ServiceContainer $services ) {

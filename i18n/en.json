@@ -8,5 +8,7 @@
 	"ffi-invalid-engine-specification-exception": "The specification for the engine '$1' is invalid ($2).",
 	"ffi-invalid-engine-specification-reason-missing-attribute": "missing '$1' attribute",
 	"ffi-invalid-engine-specification-reason-nonexistent-class": "the class '$1' does not exist",
-	"ffi-no-such-engine-exception": "The engine '$1' does not exist."
+	"ffi-no-such-engine-exception": "The engine '$1' does not exist.",
+	"ffi-missing-engine-indicator": "Missing engine",
+	"ffi-no-engine": "No valid engine has been configured for this file extension."
 }

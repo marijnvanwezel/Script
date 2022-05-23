@@ -8,5 +8,7 @@
 	"ffi-invalid-engine-specification-exception": "De specificatie voor de engine '$1' is ongeldig ($2).",
 	"ffi-invalid-engine-specification-reason-missing-attribute": "attribuut '$1' ontbreekt",
 	"ffi-invalid-engine-specification-reason-nonexistent-class": "de class '$1' bestaat niet",
-	"ffi-no-such-engine-exception": "De engine '$1' bestaat niet."
+	"ffi-no-such-engine-exception": "De engine '$1' bestaat niet.",
+	"ffi-missing-engine-indicator": "Ontbrekende engine",
+	"ffi-no-engine": "Er is geen geldige engine geconfigureerd voor deze bestandsextensie."
 }

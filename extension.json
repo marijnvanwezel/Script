@@ -36,6 +36,7 @@
 			"id": 7670,
 			"constant": "NS_SCRIPT",
 			"name": "Script",
+			"protection": "ffi-edit-script",
 			"defaultcontentmodel": "script"
 		},
 		{
@@ -44,8 +45,42 @@
 			"name": "Script_talk"
 		}
 	],
+	"GroupPermissions": {
+		"user": {
+			"ffi-edit-script": true
+		}
+	},
+	"ContentHandlers": {
+		"script": "MediaWiki\\Extension\\FFI\\MediaWiki\\ContentHandlers\\ScriptContentHandler"
+	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\FFI\\": "includes/"
 	},
+	"Hooks": {
+		"EditFilterMergedContent": "main",
+		"EditPageBeforeEditButtons": "main",
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks::onCodeEditorGetPageLanguage"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks",
+			"services": [
+				"FFI.EngineFactory"
+			]
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/FFI.ServiceWiring.php"
+	],
+	"ResourceModules": {
+		"ext.ffi.ui": {
+			"styles": "ext.ffi.ui.css"
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "FFI/modules"
+	},
+	"callback": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks::onRegistration",
 	"manifest_version": 2
 }

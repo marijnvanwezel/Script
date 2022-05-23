@@ -2,19 +2,41 @@
 
 namespace MediaWiki\Extension\FFI\MediaWiki\ContentHandlers;
 
-use Content;
-use MWContentSerializationException;
+use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\FFI\FFIServices;
+use TextContentHandler;
+use Title;
 
-class ScriptContentHandler extends \ContentHandler {
-	public function serializeContent(Content $content, $format = null) {
-		// TODO: Implement serializeContent() method.
+class ScriptContentHandler extends TextContentHandler {
+	/**
+	 * @inheritDoc
+	 */
+	public function __construct( $modelId = CONTENT_MODEL_SCRIPT, $formats = [CONTENT_FORMAT_TEXT] ) {
+		parent::__construct( $modelId, $formats );
 	}
 
-	public function unserializeContent($blob, $format = null) {
-		// TODO: Implement unserializeContent() method.
+	/**
+	 * @inheritDoc
+	 */
+	protected function getContentClass(): string {
+		return ScriptContent::class;
 	}
 
-	public function makeEmptyContent() {
-		// TODO: Implement makeEmptyContent() method.
+	/**
+	 * @inheritDoc
+	 * @throws InvalidEngineSpecificationException
+	 */
+	public function canBeUsedOn( Title $title ): bool {
+		if ( $title->getNamespace() !== NS_SCRIPT ) {
+			// Disable "script" model outside the "Script" namespace
+			return false;
+		}
+
+		if ( FFIServices::getEngineFactory()->newFromTitle( $title ) === null ) {
+			// Disable the "script" module for pages with invalid file extensions
+			return false;
+		}
+
+		return parent::canBeUsedOn( $title );
 	}
 }

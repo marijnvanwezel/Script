@@ -20,22 +20,10 @@
  */
 
 /**
- * This file is loaded by MediaWiki\MediaWikiServices::getInstance() during the
- * bootstrapping of the dependency injection framework.
+ * This file is not loaded by MediaWiki, and exists purely for static analysis purposes
  *
  * @file
  */
 
-use MediaWiki\Extension\FFI\Factories\EngineFactory;
-use MediaWiki\Extension\FFI\FFIServices;
-use MediaWiki\Extension\FFI\Factories\ScriptFactory;
-use MediaWiki\MediaWikiServices;
-
-return [
-	"FFI.EngineFactory" => static function ( MediaWikiServices $services ): EngineFactory {
-		return new EngineFactory( $services->getMainConfig()->get( 'FFIEngines' ) );
-	},
-	"FFI.ScriptFactory" => static function ( MediaWikiServices $services ): ScriptFactory {
-		return new ScriptFactory( FFIServices::getEngineFactory( $services ) );
-	}
-];
+const NS_SCRIPT = 7670;
+const NS_SCRIPT_TALK = 7671;

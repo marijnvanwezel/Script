@@ -1,0 +1,8 @@
+.mw-ffi-engine-type-indicator {
+    color: #72777d;
+}
+
+.mw-ffi-missing-engine-indicator {
+    color: #cc0000;
+    font-weight: bold;
+}

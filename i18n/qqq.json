@@ -8,5 +8,7 @@
 	"ffi-invalid-engine-specification-exception": "Error message displayed when trying to construct an engine from an invalid engine specification. Parameters:\n* $1 - the name of the engine that the application tried to construct\n* $2 - the reason for why the specification is invalid",
 	"ffi-invalid-engine-specification-reason-missing-attribute": "Reason displayed when an engine specification is invalid because of a missing attribute. Used as <code>$2</code> in {{msg-mw|ffi-invalid-engine-specification-exception}}. Parameters:\n* $1 - the name of the attribute that is missing",
 	"ffi-invalid-engine-specification-reason-nonexistent-class": "Reason displayed when an engine specification is invalid because of the specified class does not exist. Used as <code>$2</code> in {{msg-mw|ffi-invalid-engine-specification-exception}}. Parameters:\n* $1 - the name of the class that does not exist",
-	"ffi-no-such-engine-exception": "Error message displayed when trying to construct an engine that does not exist. Parameters:\n* $1 - the name of the engine that the application tried to construct"
+	"ffi-no-such-engine-exception": "Error message displayed when trying to construct an engine that does not exist. Parameters:\n* $1 - the name of the engine that the application tried to construct",
+	"ffi-missing-engine-indicator": "Indicator shown when no engine is available for the script.",
+	"ffi-no-engine": "Error message shown when the user tries to save a script page without a valid engine configured for that page."
 }
