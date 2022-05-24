@@ -88,4 +88,13 @@ abstract class Engine {
 	public function getGeSHiName(): ?string {
 		return null;
 	}
+
+	/**
+	 * Returns the options passed to the engine.
+	 *
+	 * @return array
+	 */
+	final protected function getOptions(): array {
+		return $this->options;
+	}
 }

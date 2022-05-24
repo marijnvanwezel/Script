@@ -18,9 +18,11 @@
 		"FFIEngines": {
 			"value": {
 				"py": {
-					"class": "MediaWiki\\Extension\\FFI\\Engines\\Python\\PythonEngine"
+					"class": "MediaWiki\\Extension\\FFI\\Engines\\Python\\PythonEngine",
+					"pythonExecutable": "python"
 				}
-			}
+			},
+			"merge_strategy": "array_plus_2d"
 		},
 		"FFIEnableCodeEditor": {
 			"value": true

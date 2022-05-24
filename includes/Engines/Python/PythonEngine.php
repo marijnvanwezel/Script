@@ -11,6 +11,20 @@ use Status;
  */
 class PythonEngine extends Engine {
 	/**
+	 * @var string
+	 */
+	private $executable;
+
+	/**
+	 * @inheritDoc
+	 */
+	public function __construct( array $options ) {
+		parent::__construct($options);
+
+		$this->executable = $options['pythonExecutable'];
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function validateSource( string $script, Status &$status ): void {
@@ -36,8 +50,8 @@ class PythonEngine extends Engine {
 	 * @inheritDoc
 	 */
 	public function getVersion(): ?string {
-		// TODO: Implement getVersion() method.
-		return null;
+		// TODO: Error handling, command safety
+		return explode( ' ', `{$this->executable} --version` )[1];
 	}
 
 	/**
