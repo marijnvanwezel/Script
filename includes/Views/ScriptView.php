@@ -1,24 +1,5 @@
 <?php
 
-/*
- * FFI MediaWiki extension
- * Copyright (C) 2021  Marijn van Wezel
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- */
-
 namespace MediaWiki\Extension\FFI\Views;
 
 use MediaWiki\Extension\FFI\Engines\Engine;
@@ -70,7 +51,7 @@ class ScriptView implements View {
 
 		if ( $highlight === null ) {
 			// Fallback to default "<pre>" styling
-			return "<pre class='mw-code mw-script' dir='ltr'>" . htmlspecialchars( $rawText ) . "</pre>";
+			return Xml::tags( 'pre', ['class' => 'mw-code mw-script', 'dir' => 'ltr'], $rawText );
 		}
 
 		return $highlight;
@@ -82,10 +63,24 @@ class ScriptView implements View {
 	public function getIndicators(): ?array {
 		if ( $this->engine === null ) {
 			$text = wfMessage( 'ffi-missing-engine-indicator' )->parse();
-			return [Xml::span( $text, 'mw-ffi-missing-engine-indicator' )];
+			return ['ffi-engine' => Xml::span( $text, 'mw-ffi-missing-engine-indicator' )];
 		}
 
-		return [Xml::span( $this->engine->getHumanName(), 'mw-ffi-engine-type-indicator' )];
+		$name = $this->engine->getHumanName();
+		$content = Xml::span( $name . ' ' . $this->engine->getVersion(), 'mw-ffi-engine-name-indicator' );
+		$logo = $this->engine->getLogo();
+
+		if ( $logo !== null ) {
+			$attribs = [
+				'src' => $logo,
+				'alt' => wfMessage( 'ffi-engine-logo-indicator-alt-text', $name )->parse(),
+				'class' => 'mw-ffi-engine-logo-indicator'
+			];
+
+			$content = Xml::element( 'img' , $attribs, '', true ) . ' ' . $content;
+		}
+
+		return ['ffi-engine' => $content];
 	}
 
 	/**

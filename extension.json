@@ -1,26 +1,18 @@
 {
 	"name": "FFI",
-	"type": "parserhook",
 	"version": "1.0.0",
+	"descriptionmsg": "ffi-desc",
+	"type": "parserhook",
 	"author": [
 		"Marijn van Wezel"
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:FFI",
-	"descriptionmsg": "ffi-desc",
 	"license-name": "GPL-2.0-or-later",
 	"requires": {
 		"MediaWiki": ">= 1.35.0",
 		"platform": {
 			"php": ">=7.3"
 		}
-	},
-	"MessagesDirs": {
-		"FFI": [
-			"i18n"
-		]
-	},
-	"ExtensionMessagesFiles": {
-		"FFIMagic": "i18n/FFI.i18n.php"
 	},
 	"config": {
 		"FFIEngines": {
@@ -29,6 +21,9 @@
 					"class": "MediaWiki\\Extension\\FFI\\Engines\\Python\\PythonEngine"
 				}
 			}
+		},
+		"FFIEnableCodeEditor": {
+			"value": true
 		}
 	},
 	"namespaces": [
@@ -45,42 +40,55 @@
 			"name": "Script_talk"
 		}
 	],
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\FFI\\": "includes/"
+	},
+	"ContentHandlers": {
+		"script": "MediaWiki\\Extension\\FFI\\MediaWiki\\ContentHandlers\\ScriptContentHandler"
+	},
+	"ExtensionMessagesFiles": {
+		"FFIMagic": "FFI.magic.php"
+	},
 	"GroupPermissions": {
 		"user": {
 			"ffi-edit-script": true
 		}
 	},
-	"ContentHandlers": {
-		"script": "MediaWiki\\Extension\\FFI\\MediaWiki\\ContentHandlers\\ScriptContentHandler"
-	},
-	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\FFI\\": "includes/"
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\FFI\\MediaWiki\\HookHandler",
+			"services": [
+				"FFI.EngineFactory",
+				"FFI.ScriptFactory"
+			]
+		}
 	},
 	"Hooks": {
 		"EditFilterMergedContent": "main",
 		"EditPageBeforeEditButtons": "main",
-		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks::onCodeEditorGetPageLanguage"
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\FFI\\MediaWiki\\LegacyHooks::onCodeEditorGetPageLanguage",
+		"ParserFirstCallInit": "main"
 	},
-	"HookHandlers": {
-		"main": {
-			"class": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks",
-			"services": [
-				"FFI.EngineFactory"
-			]
-		}
-	},
-	"ServiceWiringFiles": [
-		"includes/FFI.ServiceWiring.php"
-	],
-	"ResourceModules": {
-		"ext.ffi.ui": {
-			"styles": "ext.ffi.ui.css"
-		}
+	"MessagesDirs": {
+		"FFI": [
+			"i18n"
+		]
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "modules",
 		"remoteExtPath": "FFI/modules"
 	},
-	"callback": "MediaWiki\\Extension\\FFI\\MediaWiki\\Hooks::onRegistration",
+	"ResourceModules": {
+		"ext.ffi.ui": {
+			"styles": "ext.ffi.ui.css"
+		}
+	},
+	"ServiceWiringFiles": [
+		"FFI.wiring.php"
+	],
+	"TrackingCategories": [
+		"ffi-error-category"
+	],
+	"callback": "MediaWiki\\Extension\\FFI\\MediaWiki\\LegacyHooks::onRegistration",
 	"manifest_version": 2
 }

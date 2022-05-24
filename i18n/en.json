@@ -5,10 +5,17 @@
 		]
 	},
 	"ffi-desc": "Framework for embedding multiple scripting languages into MediaWiki pages",
-	"ffi-invalid-engine-specification-exception": "The specification for the engine '$1' is invalid ($2).",
-	"ffi-invalid-engine-specification-reason-missing-attribute": "missing '$1' attribute",
-	"ffi-invalid-engine-specification-reason-nonexistent-class": "the class '$1' does not exist",
-	"ffi-no-such-engine-exception": "The engine '$1' does not exist.",
+	"ffi-engine-logo-indicator-alt-text": "$1 logo",
+	"ffi-error-category": "Pages with FFI script errors",
+	"ffi-error-category-desc": "There was an error when processing the scripts included on the page.",
+	"ffi-invalid-engine-specification-error": "The specification for the engine \"$1\" is invalid ($2).",
+	"ffi-invalid-engine-specification-reason-missing-attribute": "missing \"$1\" attribute",
+	"ffi-invalid-engine-specification-reason-nonexistent-class": "the class \"$1\" does not exist",
+	"ffi-missing-engine-error": "No engine has been configured for script \"$1\".",
 	"ffi-missing-engine-indicator": "Missing engine",
-	"ffi-no-engine": "No valid engine has been configured for this file extension."
+	"ffi-missing-function-name-error": "You did not specify a function to call. You must specify a function to call as the second argument.",
+	"ffi-no-engine-error": "No valid engine has been configured for this file extension.",
+	"ffi-no-such-engine-error": "The engine \"$1\" does not exist.",
+	"ffi-no-such-script-error": "No such script \"$1\".",
+	"ffi-script-error-prefix": "Script error:"
 }
