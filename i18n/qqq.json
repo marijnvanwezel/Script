@@ -4,7 +4,13 @@
 			"Marijn van Wezel"
 		]
 	},
+	"ffi-broken-pipe": "{{technical}}\nMessage displayed whenever a broken pipe occurs.",
+	"ffi-could-not-validate": "Message displayed whenever the source code could not be validate due to errors.",
 	"ffi-desc": "{{desc|name=FFI|url=https://www.mediawiki.org/wiki/Extension:FFI}}",
+	"ffi-doc-page-header": "Message displayed at the top of the documentation page. Parameters:\n* $1 - the name of the programming language in which the corresponding script is written\n$2 - the prefixed title of the script",
+	"ffi-doc-page-does-not-exist": "Message displayed if the documentation page does not exist. Parameters:\n* $1 - the name of the programming language in which the script is written\n$2 - the prefixed title of the doc page",
+	"ffi-doc-page-suffix": "The page suffix (subpage) for script documentation pages.",
+	"ffi-doc-page-transclusion": "{{notranslate}}\nMessage displayed if the documentation page does exist. Parameters:\n* $1 - the prefixed title of the doc page",
 	"ffi-engine-logo-indicator-alt-text": "Alt-text of the logo indicator shown on pages in the Script namespace.",
 	"ffi-error-category": "{{tracking category name}}\nTracking category for pages with errors from #script.",
 	"ffi-error-category-desc": "Description on [[Special:TrackingCategories]] for the {{msg-mw|ffi-error-category}} tracking category.",
@@ -12,10 +18,18 @@
 	"ffi-invalid-engine-specification-reason-missing-attribute": "Reason displayed when an engine specification is invalid because of a missing attribute. Used as <code>$2</code> in {{msg-mw|ffi-invalid-engine-specification-exception}}. Parameters:\n* $1 - the name of the attribute that is missing",
 	"ffi-invalid-engine-specification-reason-nonexistent-class": "Reason displayed when an engine specification is invalid because of the specified class does not exist. Used as <code>$2</code> in {{msg-mw|ffi-invalid-engine-specification-exception}}. Parameters:\n* $1 - the name of the class that does not exist",
 	"ffi-missing-engine-error": "Error message displayed when the user tries to invoke a script for which no engine has been configured. Parameters:\n* $1 - the name of the script the user tried to invoke",
+	"ffi-missing-engine-header": "Message displayed if the engine needed to execute a script is missing.",
 	"ffi-missing-engine-indicator": "Indicator shown when no engine is available for the script.",
 	"ffi-missing-function-name-error": "Error message displayed when the user tries to invoke a script without specifying which function to invoke.",
 	"ffi-no-engine-error": "Error message displayed at the top of the edit form when the user tries to save a script without a valid engine configured for the script's file extension.",
 	"ffi-no-such-engine-error": "Error message displayed when trying to construct an engine that does not exist. Parameters:\n* $1 - the name of the engine that the application tried to construct",
 	"ffi-no-such-script-error": "Error message displayed when the user tries to invoke a script that does not exist. Parameters:\n* $1 - the name of the script the user tried to invoke",
-	"ffi-script-error-prefix": "Prefix appended to error messages displayed when the invocation of a script using the '#script' parser function fails."
+	"ffi-python-error": "Error message displayed when the execution of a Python script failed. Parameters:\n* $1 - the error message given by Python",
+	"ffi-python-human-name": "{{notranslate}} The human readable name of the Python programming language.",
+	"ffi-python-open-process-error": "Error message displayed when the Python engine process could not be opened. Parameters:\n* $1 - the path to the engine file\n* $2 - the Python executable that was used\n* $3 - the error that was emitted by PHP",
+	"ffi-python-missing-proc-open-error": "Error message displayed when the PHP function <tt>proc_open</tt> is not available. <tt>proc_open</tt> is a PHP function name and <tt>disable_functions</tt> is the name of a PHP configuration. Both these names aren't localized and should not be translated.\n\nSee also:\n* proc_open: https://www.php.net/manual/en/function.proc-open.php\n* disable_functions: https://www.php.net/manual/en/ini.core.php",
+	"ffi-script-error-prefix": "Prefix appended to error messages displayed when the invocation of a script using the '#script' parser function fails.",
+	"content-model-script": "Name for the script content model, used when describing what type of content a page contains.",
+	"nstab-script": "The name for the tab of the Script namespace.\n\nSee also:\n* {{msg-mw|Nstab-script}}\n* {{msg-mw|Tooltip-ca-nstab-script}}",
+	"tooltip-ca-nstab-script": "Tooltip shown when hovering over the {{msg-mw|Nstab-script}} tab.\n\nSee also:\n* {{msg-mw|Nstab-script}}\n* {{msg-mw|Tooltip-ca-nstab-script}}"
 }

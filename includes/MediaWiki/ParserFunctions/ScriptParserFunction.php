@@ -2,9 +2,10 @@
 
 namespace MediaWiki\Extension\FFI\MediaWiki\ParserFunctions;
 
+use MediaWiki\Extension\FFI\EngineStore;
 use MediaWiki\Extension\FFI\Exceptions\FFIException;
 use MediaWiki\Extension\FFI\Exceptions\NoSuchScriptException;
-use MediaWiki\Extension\FFI\Factories\ScriptFactory;
+use MediaWiki\Extension\FFI\ScriptFactory;
 use Parser;
 use PPFrame;
 use Title;

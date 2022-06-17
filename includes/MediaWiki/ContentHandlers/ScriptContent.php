@@ -33,7 +33,7 @@ class ScriptContent extends TextContent {
 			return;
 		}
 
-		$engine = FFIServices::getEngineFactory()->newFromTitle( $title );
+		$engine = FFIServices::getEngineStore()->getByTitle( $title );
 		$view = new ScriptView( $title, $engine );
 
 		foreach ( $view->getIndicators() as $id => $content ) {

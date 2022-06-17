@@ -42,7 +42,7 @@ final class LegacyHooks {
 			return true;
 		}
 
-		$engine = FFIServices::getEngineFactory()->newFromTitle( $title );
+		$engine = FFIServices::getEngineStore()->getByTitle( $title );
 
 		if ( $engine === null ) {
 			return true;

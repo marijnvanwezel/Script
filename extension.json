@@ -18,7 +18,9 @@
 		"FFIEngines": {
 			"value": {
 				"py": {
-					"class": "MediaWiki\\Extension\\FFI\\Engines\\Python\\PythonEngine",
+					"class": "MediaWiki\\Extension\\FFI\\Engines\\PythonStandalone\\PythonStandaloneEngine",
+					"disabled": false,
+					"helpUrl": "https://www.python.org/",
 					"pythonExecutable": "python"
 				}
 			},
@@ -34,12 +36,13 @@
 			"constant": "NS_SCRIPT",
 			"name": "Script",
 			"protection": "ffi-edit-script",
-			"defaultcontentmodel": "script"
+			"subpages": true
 		},
 		{
 			"id": 7671,
 			"constant": "NS_SCRIPT_TALK",
-			"name": "Script_talk"
+			"name": "Script_talk",
+			"subpages": true
 		}
 	],
 	"AutoloadNamespaces": {
@@ -52,7 +55,7 @@
 		"FFIMagic": "FFI.magic.php"
 	},
 	"GroupPermissions": {
-		"user": {
+		"*": {
 			"ffi-edit-script": true
 		}
 	},
@@ -60,12 +63,14 @@
 		"main": {
 			"class": "MediaWiki\\Extension\\FFI\\MediaWiki\\HookHandler",
 			"services": [
-				"FFI.EngineFactory",
+				"FFI.EngineStore",
 				"FFI.ScriptFactory"
 			]
 		}
 	},
 	"Hooks": {
+		"ArticleViewHeader": "main",
+		"ContentHandlerDefaultModelFor": "main",
 		"EditFilterMergedContent": "main",
 		"EditPageBeforeEditButtons": "main",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\FFI\\MediaWiki\\LegacyHooks::onCodeEditorGetPageLanguage",

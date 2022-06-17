@@ -2,10 +2,11 @@
 
 namespace MediaWiki\Extension\FFI;
 
-use MediaWiki\Extension\FFI\Factories\EngineFactory;
-use MediaWiki\Extension\FFI\Factories\ScriptFactory;
+use MediaWiki\Extension\FFI\EngineStore;
+use MediaWiki\Extension\FFI\ScriptFactory;
 use MediaWiki\Extension\FFI\MediaWiki\HookRunner;
 use MediaWiki\MediaWikiServices;
+use Psr\Log\LoggerInterface;
 use Wikimedia\Services\ServiceContainer;
 
 /**
@@ -25,12 +26,16 @@ final class FFIServices {
 	private function __construct() {
 	}
 
-	public static function getEngineFactory( ?ServiceContainer $services = null ): EngineFactory {
-		return self::getService( "EngineFactory", $services );
+	public static function getEngineStore( ?ServiceContainer $services = null ): EngineStore {
+		return self::getService( "EngineStore", $services );
 	}
 
 	public static function getHookRunner( ?ServiceContainer $services = null ): HookRunner {
 		return self::getService( "HookRunner", $services );
+	}
+
+	public static function getLogger( ?ServiceContainer $services = null ): LoggerInterface {
+		return self::getService( "Logger", $services );
 	}
 
 	public static function getScriptFactory( ?ServiceContainer $services = null ): ?ScriptFactory {

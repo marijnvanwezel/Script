@@ -7,20 +7,28 @@
  * @file
  */
 
-use MediaWiki\Extension\FFI\Factories\EngineFactory;
+use MediaWiki\Extension\FFI\EngineStore;
 use MediaWiki\Extension\FFI\FFIServices;
-use MediaWiki\Extension\FFI\Factories\ScriptFactory;
+use MediaWiki\Extension\FFI\ScriptFactory;
 use MediaWiki\Extension\FFI\MediaWiki\HookRunner;
+use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use Psr\Log\LoggerInterface;
 
 return [
-	"FFI.EngineFactory" => static function ( MediaWikiServices $services ): EngineFactory {
-		return new EngineFactory( $services->getMainConfig(), FFIServices::getHookRunner( $services ) );
+	"FFI.EngineStore" => static function ( MediaWikiServices $services ): EngineStore {
+		return new EngineStore(
+			$services->getMainConfig()->get( 'FFIEngines' ),
+			FFIServices::getHookRunner( $services )
+		);
 	},
 	"FFI.HookRunner" => static function ( MediaWikiServices $services ): HookRunner {
 		return new HookRunner( $services->getHookContainer() );
 	},
+	"FFI.Logger" => static function (): LoggerInterface {
+		return LoggerFactory::getInstance( 'FFI' );
+	},
 	"FFI.ScriptFactory" => static function ( MediaWikiServices $services ): ScriptFactory {
-		return new ScriptFactory( FFIServices::getEngineFactory( $services ) );
+		return new ScriptFactory( FFIServices::getEngineStore( $services ) );
 	}
 ];

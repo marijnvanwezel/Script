@@ -11,7 +11,7 @@ class InvalidEngineSpecificationException extends FFIException {
 	 * @param string $reasonName The name of the i18n message that specifies the reason
 	 * @param string[] $reasonArgs Any arguments that need to be passed to $reasonName
 	 */
-	public function __construct( string $ext, string $reasonName, array $reasonArgs ) {
+	public function __construct( string $ext, string $reasonName, array $reasonArgs = [] ) {
 		$reason = wfMessage( $reasonName, $reasonArgs )->parse();
 
 		parent::__construct( 'ffi-invalid-engine-specification-error', [$ext, $reason] );

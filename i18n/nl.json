@@ -4,7 +4,13 @@
 			"Marijn van Wezel"
 		]
 	},
+	"ffi-broken-pipe": "Broken pipe",
+	"ffi-could-not-validate": "Kon broncode niet valideren vanwege errors.",
 	"ffi-desc": "Framework voor het inbedden van meerdere scripttalen in MediaWiki-pagina's",
+	"ffi-doc-page-header": "'''Dit is de documentatiepagina voor het ''$1''-script [[$2]]'''.",
+	"ffi-doc-page-does-not-exist": "''Documentatie voor dit $1-script kan aan worden gemaakt op [[$2]]''.",
+	"ffi-doc-page-suffix": "doc",
+	"ffi-doc-page-transclusion": "{{$1}}\n<hr/>",
 	"ffi-engine-logo-indicator-alt-text": "$1 logo",
 	"ffi-error-category": "Pagina's met FFI scriptfouten",
 	"ffi-error-category-desc": "Er is een fout opgetreden bij het verwerken van de scripts ingesloten op de pagina.",
@@ -12,10 +18,18 @@
 	"ffi-invalid-engine-specification-reason-missing-attribute": "attribuut \"$1\" ontbreekt",
 	"ffi-invalid-engine-specification-reason-nonexistent-class": "de class \"$1\" bestaat niet",
 	"ffi-missing-engine-error": "Er is geen engine geconfigureerd voor script \"$1\".",
+	"ffi-missing-engine-header": "''De engine nodig om dit script uit te voeren ontbreekt''.",
 	"ffi-missing-engine-indicator": "Ontbrekende engine",
 	"ffi-missing-function-name-error": "U heeft geen functie gespecificieerd om aangeroepen te worden. U moet een functie specificeren als tweede argument.",
 	"ffi-no-engine-error": "Er is geen geldige engine geconfigureerd voor deze bestandsextensie.",
 	"ffi-no-such-engine-error": "De engine \"$1\" bestaat niet.",
 	"ffi-no-such-script-error": "Geen script met naam \"$1\".",
-	"ffi-script-error-prefix": "Script fout:"
+	"ffi-python-error": "Pythonfout: $1",
+	"ffi-python-human-name": "Python",
+	"ffi-python-open-process-error": "Kan proces \"$1\" niet openen met \"$2\": $3.",
+	"ffi-python-missing-proc-open-error": "Kan proces niet aanmaken: \"proc_open\" is niet beschikbaar. Controleer PHP's \"disable_functions\" instelling.",
+	"ffi-script-error-prefix": "Script fout:",
+	"content-model-script": "script",
+	"nstab-script": "Script",
+	"tooltip-ca-nstab-script": "Scriptpagina bekijken"
 }

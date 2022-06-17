@@ -2,6 +2,7 @@
 
 namespace MediaWiki\Extension\FFI\Engines;
 
+use MediaWiki\Extension\FFI\Exceptions\FFIException;
 use PPFrame;
 
 /**
@@ -11,7 +12,7 @@ use PPFrame;
  */
 class Script {
 	/**
-	 * @var Engine Reference to the engine that can execute this script
+	 * @var BaseEngine Reference to the engine that can execute this script
 	 */
 	private $engine;
 
@@ -21,10 +22,10 @@ class Script {
 	private $source;
 
 	/**
-	 * @param Engine $engine Reference to the engine used to execute this script
+	 * @param BaseEngine $engine Reference to the engine used to execute this script
 	 * @param string $source The source code of this script
 	 */
-	public function __construct( Engine $engine, string $source ) {
+	public function __construct(BaseEngine $engine, string $source ) {
 		$this->engine = $engine;
 		$this->source = $source;
 	}
@@ -35,8 +36,18 @@ class Script {
 	 * @param string $name The name of the function to call
 	 * @param PPFrame $frame The frame to pass to the function
 	 * @return string The result of the function invocation
+	 * @throws FFIException
 	 */
 	public function invoke( string $name, PPFrame $frame ): string {
 		return $this->engine->executeScript( $this->source, $name, $frame );
+	}
+
+	/**
+	 * Returns the engine used for this script.
+	 *
+	 * @return BaseEngine
+	 */
+	public function getEngine(): BaseEngine {
+		return $this->engine;
 	}
 }

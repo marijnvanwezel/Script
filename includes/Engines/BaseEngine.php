@@ -2,10 +2,11 @@
 
 namespace MediaWiki\Extension\FFI\Engines;
 
+use MediaWiki\Extension\FFI\Exceptions\FFIException;
 use PPFrame;
 use Status;
 
-abstract class Engine {
+abstract class BaseEngine {
 	/**
 	 * @var array The options passed to the engine
 	 */
@@ -13,6 +14,9 @@ abstract class Engine {
 
 	/**
 	 * @param array $options Arbitrary array of options passed to this engine
+	 *
+	 * @note While this class is not a singleton (you can construct it as many times as you want), it is
+	 *  usually only constructed once per WebRequest, since instances are cached in the EngineStore class.
 	 */
 	public function __construct( array $options ) {
 		$this->options = $options;
@@ -22,11 +26,12 @@ abstract class Engine {
 	 * Validates the given source code and reports any syntax errors through
 	 * the Status object.
 	 *
-	 * @param string $script The source to evaluate
+	 * @param string $source The source to evaluate
 	 * @param Status $status
 	 * @return void
+	 * @throws FFIException
 	 */
-	abstract public function validateSource( string $script, Status &$status ): void;
+	abstract public function validateSource( string $source, Status &$status ): void;
 
 	/**
 	 * Executes the given script.
@@ -35,6 +40,7 @@ abstract class Engine {
 	 * @param string $mainName The name of the main function
 	 * @param PPFrame $frame The frame to pass along to the main function
 	 * @return string The result of the script execution
+	 * @throws FFIException
 	 */
 	abstract public function executeScript( string $script, string $mainName, PPFrame $frame ): string;
 
@@ -57,7 +63,7 @@ abstract class Engine {
 	}
 
 	/**
-	 * Path to the logo of the language. This is used as an indicator on any pages
+	 * Path to the logo of this language. This is used as an indicator on any pages
 	 * written in this language. May be NULL to use the human name instead of the
 	 * logo.
 	 *
@@ -87,6 +93,16 @@ abstract class Engine {
 	 */
 	public function getGeSHiName(): ?string {
 		return null;
+	}
+
+	/**
+	 * Returns the URL to the help page for this language. May be NULL if there is
+	 * no help page.
+	 *
+	 * @return string|null
+	 */
+	final public function getHelpUrl(): ?string {
+		return $this->options['helpUrl'] ?? null;
 	}
 
 	/**

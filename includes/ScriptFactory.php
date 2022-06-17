@@ -1,8 +1,10 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Factories;
+namespace MediaWiki\Extension\FFI;
 
+use MediaWiki\Extension\FFI\EngineStore;
 use MediaWiki\Extension\FFI\Exceptions\FFIException;
+use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
 use MediaWiki\Extension\FFI\Exceptions\MissingEngineException;
 use MediaWiki\Extension\FFI\Exceptions\NoSuchScriptException;
 use MediaWiki\Extension\FFI\MediaWiki\ContentHandlers\ScriptContent;
@@ -14,14 +16,14 @@ use WikiPage;
 
 class ScriptFactory {
 	/**
-	 * @var EngineFactory
+	 * @var EngineStore
 	 */
 	private $engineFactory;
 
 	/**
-	 * @param EngineFactory $engineFactory
+	 * @param EngineStore $engineFactory
 	 */
-	public function __construct( EngineFactory $engineFactory ) {
+	public function __construct( EngineStore $engineFactory ) {
 		$this->engineFactory = $engineFactory;
 	}
 
@@ -29,10 +31,13 @@ class ScriptFactory {
 	 * Constructs a script for the given Title.
 	 *
 	 * @param Title $title The page to get the script for
+	 * @param string|null $ext Will be set to the extension of the engine that is used
 	 * @return Script
-	 * @throws FFIException
+	 * @throws InvalidEngineSpecificationException
+	 * @throws MissingEngineException
+	 * @throws NoSuchScriptException
 	 */
-	public function newFromTitle( Title $title ): Script {
+	public function newFromTitle( Title $title, ?string &$ext = null ): Script {
 		try {
 			$wikiPage = WikiPage::factory( $title );
 		} catch ( MWException $exception ) {
@@ -49,7 +54,7 @@ class ScriptFactory {
 			throw new NoSuchScriptException( $title->getText() );
 		}
 
-		$engine = $this->engineFactory->newFromTitle( $title );
+		$engine = $this->engineFactory->getByTitle( $title, $ext );
 
 		if ( $engine === null ) {
 			throw new MissingEngineException( $title->getText() );

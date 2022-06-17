@@ -17,13 +17,6 @@ class ScriptContentHandler extends TextContentHandler {
 
 	/**
 	 * @inheritDoc
-	 */
-	protected function getContentClass(): string {
-		return ScriptContent::class;
-	}
-
-	/**
-	 * @inheritDoc
 	 * @throws InvalidEngineSpecificationException
 	 */
 	public function canBeUsedOn( Title $title ): bool {
@@ -32,11 +25,18 @@ class ScriptContentHandler extends TextContentHandler {
 			return false;
 		}
 
-		if ( FFIServices::getEngineFactory()->newFromTitle( $title ) === null ) {
+		if ( FFIServices::getEngineStore()->getByTitle( $title ) === null ) {
 			// Disable the "script" module for pages with invalid file extensions
 			return false;
 		}
 
 		return parent::canBeUsedOn( $title );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function getContentClass(): string {
+		return ScriptContent::class;
 	}
 }

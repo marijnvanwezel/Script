@@ -2,7 +2,9 @@
 
 namespace MediaWiki\Extension\FFI\Views;
 
-use MediaWiki\Extension\FFI\Engines\Engine;
+use MediaWiki\Extension\FFI\Engines\BaseEngine;
+use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\FFI\Utils;
 use SyntaxHighlight;
 use Title;
 use Xml;
@@ -12,7 +14,7 @@ use Xml;
  */
 class ScriptView implements View {
 	/**
-	 * @var Engine|null
+	 * @var BaseEngine|null
 	 */
 	private $engine;
 
@@ -27,10 +29,10 @@ class ScriptView implements View {
 	private $modules = [];
 
 	/**
-	 * @param Title $title
-	 * @param Engine|null $engine
+	 * @param Title $title The title to the script page
+	 * @param BaseEngine|null $engine
 	 */
-	public function __construct( Title $title, ?Engine $engine ) {
+	public function __construct( Title $title, ?BaseEngine $engine ) {
 		$this->title = $title;
 		$this->engine = $engine;
 	}
@@ -51,10 +53,12 @@ class ScriptView implements View {
 
 		if ( $highlight === null ) {
 			// Fallback to default "<pre>" styling
-			return Xml::tags( 'pre', ['class' => 'mw-code mw-script', 'dir' => 'ltr'], $rawText );
+			$highlight = Xml::tags( 'pre', ['class' => 'mw-code mw-script', 'dir' => 'ltr'], $rawText );
 		}
 
-		return $highlight;
+		$docPage = $this->getHeaderHtml();
+
+		return $docPage . $highlight;
 	}
 
 	/**
@@ -68,6 +72,18 @@ class ScriptView implements View {
 
 		$name = $this->engine->getHumanName();
 		$content = Xml::span( $name . ' ' . $this->engine->getVersion(), 'mw-ffi-engine-name-indicator' );
+		$helpUrl = $this->engine->getHelpUrl();
+
+		if ( $helpUrl !== null ) {
+			$attribs = [
+				'href' => $helpUrl,
+				'class' => 'mw-ffi-engine-help-link-indicator',
+				'target' => '_blank'
+			];
+
+			$content = Xml::tags( 'a', $attribs, $content );
+		}
+
 		$logo = $this->engine->getLogo();
 
 		if ( $logo !== null ) {
@@ -88,6 +104,23 @@ class ScriptView implements View {
 	 */
 	public function getModules(): array {
 		return array_merge( ['ext.ffi.ui'], $this->modules );
+	}
+
+	/**
+	 * Returns the HTML of the doc page.
+	 *
+	 * @return string
+	 */
+	public function getHeaderHtml(): string {
+		if ( $this->engine === null ) {
+			return wfMessage( 'ffi-missing-engine-header' )->parse();
+		}
+
+		$docPage = Utils::getDocPage( $this->title );
+
+		return $docPage->exists() ?
+			wfMessage( 'ffi-doc-page-transclusion', $docPage->getFullText() )->parse() :
+			wfMessage( 'ffi-doc-page-does-not-exist', $this->engine->getHumanName(), $docPage->getFullText() )->parse();
 	}
 
 	/**
