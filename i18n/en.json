@@ -5,6 +5,7 @@
 		]
 	},
 	"ffi-broken-pipe": "Broken pipe",
+	"ffi-broken-pipe-detailed": "Broken pipe: $1",
 	"ffi-could-not-validate": "Could not validate source due to errors.",
 	"ffi-desc": "Framework for embedding multiple scripting languages into MediaWiki pages",
 	"ffi-doc-page-header": "'''This is the documentation page for the ''$1'' script [[$2]]'''.",

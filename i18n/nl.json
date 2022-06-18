@@ -5,6 +5,7 @@
 		]
 	},
 	"ffi-broken-pipe": "Broken pipe",
+	"ffi-broken-pipe-detailed": "Broken pipe: $1",
 	"ffi-could-not-validate": "Kon broncode niet valideren vanwege errors.",
 	"ffi-desc": "Framework voor het inbedden van meerdere scripttalen in MediaWiki-pagina's",
 	"ffi-doc-page-header": "'''Dit is de documentatiepagina voor het ''$1''-script [[$2]]'''.",

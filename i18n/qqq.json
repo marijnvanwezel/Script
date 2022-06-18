@@ -5,6 +5,7 @@
 		]
 	},
 	"ffi-broken-pipe": "{{technical}}\nMessage displayed whenever a broken pipe occurs.",
+	"ffi-broken-pipe-detailed": "{{technical}}\nMessage displayed whenever a broken pipe occurs. Parameters:\n* $1 - message detailing the cause of the broken pipe",
 	"ffi-could-not-validate": "Message displayed whenever the source code could not be validate due to errors.",
 	"ffi-desc": "{{desc|name=FFI|url=https://www.mediawiki.org/wiki/Extension:FFI}}",
 	"ffi-doc-page-header": "Message displayed at the top of the documentation page. Parameters:\n* $1 - the name of the programming language in which the corresponding script is written\n$2 - the prefixed title of the script",

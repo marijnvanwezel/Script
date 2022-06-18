@@ -77,7 +77,7 @@ class PythonStandaloneEngine extends BaseEngine {
 		} catch ( BrokenPipeException $exception ) {
 			unset( $this->interpreter );
 			$this->librariesRegistered = false;
-			$status->fatal( $exception->getMessage() );
+			$status->fatal( 'ffi-python-error', $exception->getMessage() );
 
 			return;
 		}

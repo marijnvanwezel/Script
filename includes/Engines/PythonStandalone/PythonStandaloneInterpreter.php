@@ -48,7 +48,7 @@ class PythonStandaloneInterpreter {
 		$descriptors = [
 			0 => ['pipe', 'r'],
 			1 => ['pipe', 'w'],
-			2 => ['pipe', 'r']
+			2 => ['pipe', 'w']
 		];
 
 		// Clear the last error, so we can be sure that any error in "error_get_last()" was emitted from
@@ -222,8 +222,17 @@ class PythonStandaloneInterpreter {
 		$input = fgets( $this->pipe_out );
 
 		if ( $input === false ) {
-			FFIServices::getLogger()->error( 'Failed to read data from Python engine' );
-			throw new BrokenPipeException();
+			// Often when we encounter a broken pipe, this is because the Python process quit unexpectedly. Check if
+			// there are any errors in STDERR and logs those if there are.
+			$error = fread( $this->pipe_err, 8192 );
+
+			if ( $error !== false ) {
+				FFIServices::getLogger()->error( 'Failed to read data from the Python engine: {error}', ['error' => $error] );
+				throw new BrokenPipeException( $error );
+			} else {
+				FFIServices::getLogger()->error( 'Failed to read data from the Python engine' );
+				throw new BrokenPipeException();
+			}
 		}
 
 		return json_decode( $input, true );
@@ -240,8 +249,17 @@ class PythonStandaloneInterpreter {
 		$result = fputs( $this->pipe_in, json_encode( $message ) . "\n" );
 
 		if ( $result === false ) {
-			FFIServices::getLogger()->error( 'Failed to write data to Python engine' );
-			throw new BrokenPipeException();
+			// Often when we encounter a broken pipe, this is because the Python process quit unexpectedly. Check if
+			// there are any errors in STDERR and logs those if there are.
+			$error = fread( $this->pipe_err, 8192 );
+
+			if ( $error !== false ) {
+				FFIServices::getLogger()->error( 'Failed to write data to the Python engine: {error}', ['error' => $error] );
+				throw new BrokenPipeException( $error );
+			} else {
+				FFIServices::getLogger()->error( 'Failed to write data to the Python engine' );
+				throw new BrokenPipeException();
+			}
 		}
 	}
 
