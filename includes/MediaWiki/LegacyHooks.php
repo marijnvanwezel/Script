@@ -1,9 +1,9 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki;
+namespace MediaWiki\Extension\Script\MediaWiki;
 
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\FFIServices;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\ScriptServices;
 use Title;
 
 /**
@@ -38,11 +38,11 @@ final class LegacyHooks {
 	 * @throws InvalidEngineSpecificationException
 	 */
 	public static function onCodeEditorGetPageLanguage( $title, &$lang, $model, $format ): bool {
-		if ( !$GLOBALS['wgFFIEnableCodeEditor'] ) {
+		if ( !$GLOBALS['wgScriptEnableCodeEditor'] ) {
 			return true;
 		}
 
-		$engine = FFIServices::getEngineStore()->getByTitle( $title );
+		$engine = ScriptServices::getEngineStore()->getByTitle( $title );
 
 		if ( $engine === null ) {
 			return true;

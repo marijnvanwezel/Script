@@ -1,25 +1,25 @@
 <?php
 
-namespace MediaWiki\Extension\FFI;
+namespace MediaWiki\Extension\Script;
 
-use MediaWiki\Extension\FFI\EngineStore;
-use MediaWiki\Extension\FFI\ScriptFactory;
-use MediaWiki\Extension\FFI\MediaWiki\HookRunner;
+use MediaWiki\Extension\Script\EngineStore;
+use MediaWiki\Extension\Script\ScriptFactory;
+use MediaWiki\Extension\Script\MediaWiki\HookRunner;
 use MediaWiki\MediaWikiServices;
 use Psr\Log\LoggerInterface;
 use Wikimedia\Services\ServiceContainer;
 
 /**
- * Getter for all FFI services. This class reduces the risk of mistyping
+ * Getter for all Script services. This class reduces the risk of mistyping
  * a service name and serves as the interface for retrieving services for
- * FFI.
+ * Script.
  *
  * @note Program logic should use dependency injection instead of this class wherever
  * possible.
  *
  * @note This class should only contain static methods.
  */
-final class FFIServices {
+final class ScriptServices {
 	/**
 	 * Disable the construction of this class by making the constructor private.
 	 */
@@ -43,6 +43,6 @@ final class FFIServices {
 	}
 
 	private static function getService( string $service, ?ServiceContainer $services ) {
-		return ( $services ?: MediaWikiServices::getInstance() )->getService( "FFI.$service" );
+		return ( $services ?: MediaWikiServices::getInstance() )->getService( "Script.$service" );
 	}
 }

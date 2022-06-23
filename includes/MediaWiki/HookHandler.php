@@ -1,15 +1,17 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki;
+namespace MediaWiki\Extension\Script\MediaWiki;
 
 use Exception;
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\EngineStore;
-use MediaWiki\Extension\FFI\ScriptFactory;
-use MediaWiki\Extension\FFI\MediaWiki\ContentHandlers\ScriptContent;
-use MediaWiki\Extension\FFI\MediaWiki\ParserFunctions\ScriptParserFunction;
-use MediaWiki\Extension\FFI\Utils;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\EngineStore;
+use MediaWiki\Extension\Script\Exceptions\ValidationException;
+use MediaWiki\Extension\Script\ScriptServices;
+use MediaWiki\Extension\Script\ScriptFactory;
+use MediaWiki\Extension\Script\MediaWiki\ContentHandlers\ScriptContent;
+use MediaWiki\Extension\Script\MediaWiki\ParserFunctions\ScriptParserFunction;
+use MediaWiki\Extension\Script\Utils;
 use MediaWiki\Hook\EditFilterMergedContentHook;
 use MediaWiki\Hook\EditPageBeforeEditButtonsHook;
 use MediaWiki\Hook\ParserFirstCallInitHook;
@@ -20,7 +22,7 @@ use Parser;
 use Status;
 
 /**
- * Hook handler for any modern hooks that FFI implements.
+ * Hook handler for any modern hooks that Script implements.
  */
 class HookHandler implements
 	ArticleViewHeaderHook,
@@ -58,7 +60,7 @@ class HookHandler implements
 
 		$engine = $this->engineStore->getByTitle( $forScript );
 		$header = wfMessage(
-			'ffi-doc-page-header',
+			'script-doc-page-header',
 			$engine->getHumanName(),
 			$forScript->getFullText()
 		)->parseAsBlock();
@@ -78,7 +80,6 @@ class HookHandler implements
 
 	/**
 	 * @inheritDoc
-	 * @throws InvalidEngineSpecificationException
 	 */
 	public function onEditFilterMergedContent( $context, $content, $status, $summary, $user, $minoredit ): void {
 		if ( !$content instanceof ScriptContent ) {
@@ -86,20 +87,28 @@ class HookHandler implements
 			return;
 		}
 
-		$engine = $this->engineStore->getByTitle( $context->getTitle(), $ext );
+		try {
+			$engine = $this->engineStore->getByTitle( $context->getTitle(), $ext );
+		} catch ( InvalidEngineSpecificationException $exception ) {
+			$status->fatal( $exception->getMessageObject() );
+			return;
+		}
 
 		if ( $engine === null ) {
 			// Special error for when no engine is configured
-			$status->fatal( 'ffi-no-engine-error' );
+			$status->fatal( 'script-no-engine-error' );
 		} else {
 			// Let the engine validate the source code
 			try {
 				$engine->validateSource( $content->getText(), $status );
-			} catch ( Exception $exception ) {
+			} catch ( ScriptException $exception ) {
 				// The validation failed miserably. This does not mean the script is invalid, it just means that the
-				// validation of the script could not be completed due to uncaught errors. In this case, the engine
-				// is in a broken state, and we should reset it.
-				$status->fatal( $exception->getMessage() );
+				// validation of the script could not be completed due to uncaught errors.
+				ScriptServices::getLogger()->error( 'Failed to validate source: {exception}', [
+					'exception' => $exception
+				] );
+
+				$status->fatal( $exception->getMessageObject() );
 			}
 		}
 	}

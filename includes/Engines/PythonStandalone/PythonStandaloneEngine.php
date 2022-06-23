@@ -1,12 +1,13 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Engines\PythonStandalone;
+namespace MediaWiki\Extension\Script\Engines\PythonStandalone;
 
-use MediaWiki\Extension\FFI\Engines\BaseEngine;
-use MediaWiki\Extension\FFI\Exceptions\BrokenPipeException;
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\FFIServices;
+use MediaWiki\Extension\Script\Engines\BaseEngine;
+use MediaWiki\Extension\Script\Engines\PythonStandalone\Exceptions\BrokenPipeException;
+use MediaWiki\Extension\Script\Engines\PythonStandalone\Exceptions\UnexpectedMessageException;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\ScriptServices;
 use MediaWiki\Shell\Shell;
 use PPFrame;
 use Status;
@@ -15,15 +16,16 @@ use Status;
  * Engine implementation using Python.
  */
 class PythonStandaloneEngine extends BaseEngine {
-	/**
-	 * @var PythonStandaloneInterpreter|void
-	 */
-	private $interpreter;
+	private const ENGINE_PATH = __DIR__ . '/pylib/engine.py';
+	private const DEFAULT_CPU_LIMIT = 7; // 7 seconds
+	private const DEFAULT_MEM_LIMIT = 52428800; // 50 MiB
+
+	private const LIBRARIES_REGISTERED_FLAG = 0b00000001;
 
 	/**
-	 * @var bool Whether the libraries have been registered with the engine
+	 * @var EngineProcess|null The external engine process
 	 */
-	private $librariesRegistered = false;
+	private $engineProcess = null;
 
 	/**
 	 * @throws InvalidEngineSpecificationException
@@ -32,7 +34,7 @@ class PythonStandaloneEngine extends BaseEngine {
 		if ( !isset( $options['pythonExecutable'] ) ) {
 			throw new InvalidEngineSpecificationException(
 				'py',
-				'ffi-invalid-engine-specification-reason-missing-attribute',
+				'script-invalid-engine-specification-reason-missing-attribute',
 				['pythonExecutable']
 			);
 		}
@@ -40,10 +42,21 @@ class PythonStandaloneEngine extends BaseEngine {
 		parent::__construct( $options );
 	}
 
+	/**
+	 * Makes sure the process is closed whenever an instance of this class is destructed.
+	 */
 	public function __destruct() {
-		if ( isset( $this->interpreter ) ) {
-			// Close the engine gracefully
-			$this->interpreter->exit();
+		if ( !isset( $this->engineProcess ) ) {
+			// No process is open, we don't need to close it
+			return;
+		}
+
+		try {
+			// Dispatch the exit opcode and let the engine shut itself down
+			$this->engineProcess->write( ['opcode' => 'exit'] );
+			$this->engineProcess->close();
+		} catch ( BrokenPipeException $exception ) {
+			ScriptServices::getLogger()->warning( "Broken pipe during shutdown" );
 		}
 	}
 
@@ -51,47 +64,35 @@ class PythonStandaloneEngine extends BaseEngine {
 	 * @inheritDoc
 	 */
 	public function executeScript( string $script, string $mainName, PPFrame $frame ): string {
-		$engine = $this->getInterpreter();
+		// Register any libraries upon (first) execution of a script
+		$this->registerLibraries();
 
-		if ( !$this->librariesRegistered ) {
-			// TODO: This doesn't work
-			FFIServices::getHookRunner()->onFFIRegisterExternalPythonLibraries( $engine );
-			$this->librariesRegistered = true;
-		}
-
-		try {
-			// TODO
-		} catch ( BrokenPipeException $exception ) {
-			unset( $this->interpreter );
-			$this->librariesRegistered = false;
-			throw $exception;
-		}
+		// TODO
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function validateSource( string $source, Status &$status ): void {
-		try {
-			$result = $this->getInterpreter()->validate( $source );
-		} catch ( BrokenPipeException $exception ) {
-			unset( $this->interpreter );
-			$this->librariesRegistered = false;
-			$status->fatal( 'ffi-python-error', $exception->getMessage() );
+		$result = $this->validate( $source );
 
-			return;
+		if ( !isset( $result['status'] ) ) {
+			throw new UnexpectedMessageException();
 		}
 
 		if ( $result['status'] === 'error' ) {
-			FFIServices::getLogger()->error( 'Failed to validate source: {context}', ['context' => $result] );
-			$status->fatal( 'ffi-could-not-validate' );
+			// The validation could not be completed. This does NOT mean the script is invalid, it means the script
+			// could not be validated due to other errors.
+			throw new ScriptException( 'script-could-not-validate' );
+		}
 
-			return;
+		if ( !isset( $result['result']['valid'] ) ) {
+			throw new UnexpectedMessageException();
 		}
 
 		if ( $result['result']['valid'] === false ) {
 			foreach ( $result['result']['errors'] as $error ) {
-				$status->fatal( 'ffi-python-error', $error );
+				$status->fatal( 'script-python-syntax-error', $error );
 			}
 		}
 	}
@@ -100,14 +101,25 @@ class PythonStandaloneEngine extends BaseEngine {
 	 * @inheritDoc
 	 */
 	public function getVersion(): ?string {
-		return PythonStandaloneInterpreter::getVersion( $this->getOptions()['pythonExecutable'] );
+		$handle = popen( Shell::escape( $this->getOptions()['pythonExecutable'] ) . ' -V', 'r' );
+
+		if ( $handle ) {
+			$version = fgets( $handle );
+			pclose( $handle );
+
+			if ( $version && preg_match( '/^(Python) (\S+)/', $version, $m ) ) {
+				return $m[2];
+			}
+		}
+
+		return null;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getHumanName(): string {
-		return wfMessage( 'ffi-python-human-name' )->parse();
+		return wfMessage( 'script-python-human-name' )->parse();
 	}
 
 	/**
@@ -148,19 +160,135 @@ class PythonStandaloneEngine extends BaseEngine {
 	}
 
 	/**
-	 * Returns the message dispatcher.
+	 * Dispatches the "setcpulimit" opcode.
 	 *
-	 * @return PythonStandaloneInterpreter
-	 * @throws FFIException
+	 * @param int $limitInSeconds The max execution time in seconds
+	 * @return array The response
+	 * @throws BrokenPipeException
 	 */
-	protected function getInterpreter(): PythonStandaloneInterpreter {
-		if ( !isset( $this->interpreter ) ) {
-			// Invoke the interpreter lazily whenever this function is called instead of in the constructor. This
-			// is done to make sure we do not unnecessarily open a process to the Python engine each time this class is
-			// constructed.
-			$this->interpreter = new PythonStandaloneInterpreter( $this->getOptions()['pythonExecutable'] );
+	protected function setCPULimit( int $limitInSeconds ): array {
+		return $this->dispatch( [
+			'opcode' => 'setcpulimit',
+			'limit' => $limitInSeconds
+		] );
+	}
+
+	/**
+	 * Dispatches the "setmemlimit" opcode.
+	 *
+	 * @param int $limit The max amount of memory to use in bytes
+	 * @return array The response
+	 * @throws BrokenPipeException
+	 */
+	protected function setMemLimit( int $limit ): array {
+		return $this->dispatch( [
+			'opcode' => 'setmemlimit',
+			'limit' => $limit
+		] );
+	}
+
+	/**
+	 * Dispatches the "validate" opcode.
+	 *
+	 * @param string $source The source to validate
+	 * @return array The response
+	 * @throws BrokenPipeException
+	 */
+	protected function validate( string $source ): array {
+		return $this->dispatch( [
+			'opcode' => 'validate',
+			'source' => $source
+		] );
+	}
+
+	/**
+	 * Dispatches the "invoke" opcode.
+	 *
+	 * @param string $source The source of the script to run
+	 * @param string $mainName The name of the function to call
+	 * @param array $args The arguments to pass to the function
+	 * @return array The response
+	 * @throws BrokenPipeException
+	 */
+	protected function invoke( string $source, string $mainName, array $args ): array {
+		return $this->dispatch( [
+			'opcode' => 'invoke',
+			'source' => $source,
+			'main' => $mainName,
+			'args' => $args
+		] );
+	}
+
+	/**
+	 * Dispatches the given message to the engine process.
+	 *
+	 * @param array $message The message to dispatch
+	 * @return array The response
+	 * @throws BrokenPipeException
+	 */
+	private function dispatch( array $message ): array {
+		$engineProcess = $this->getEngineProcess();
+
+		try {
+			return $engineProcess->dispatch( $message );
+		} catch ( BrokenPipeException $exception ) {
+			unset( $this->engineProcess );
+			$this->librariesRegistered = false;
+
+			throw $exception;
+		}
+	}
+
+	/**
+	 * Returns the engine process.
+	 *
+	 * @return EngineProcess
+	 * @throws BrokenPipeException
+	 */
+	private function getEngineProcess(): EngineProcess {
+		if ( !isset( $this->engineProcess ) ) {
+			// Invoke the engine process lazily whenever this function is called instead of invoking it in the
+			// constructor. This is done to make sure we do not unnecessarily open a process to the Python engine
+			// each time this class is constructed.
+			$this->engineProcess = $this->newEngine();
 		}
 
-		return $this->interpreter;
+		return $this->engineProcess;
+	}
+
+	/**
+	 * Creates a new EngineProcess and returns that
+	 *
+	 * @return EngineProcess
+	 * @throws BrokenPipeException
+	 */
+	private function newEngine(): EngineProcess {
+		$options = $this->getOptions();
+
+		$process = new EngineProcess( $options['pythonExecutable'], self::ENGINE_PATH );
+		$process->dispatch( ['opcode' => 'setcpulimit', 'limit' => $options['cpuLimit'] ?? self::DEFAULT_CPU_LIMIT] );
+		$process->dispatch( ['opcode' => 'setmemlimit', 'limit' => $options['memoryLimit'] ?? self::DEFAULT_MEM_LIMIT] );
+
+		return $process;
+	}
+
+	/**
+	 * Registers (external) libraries if necessary. Libraries are ever only registered once per process instance. This
+	 * function therefore does nothing if libraries have already been registered with this process.
+	 *
+	 * @return void
+	 * @throws BrokenPipeException
+	 */
+	private function registerLibraries() {
+		$engineProcess = $this->getEngineProcess();
+
+		if ( $engineProcess->hasFlag( self::LIBRARIES_REGISTERED_FLAG ) ) {
+			return;
+		}
+
+		$libraries = $this->getStandardLibraries();
+		ScriptServices::getHookRunner()->onScriptRegisterExternalPythonLibraries( $libraries );
+
+		$engineProcess->setFlag( self::LIBRARIES_REGISTERED_FLAG );
 	}
 }

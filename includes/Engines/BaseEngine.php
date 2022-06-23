@@ -1,8 +1,9 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Engines;
+namespace MediaWiki\Extension\Script\Engines;
 
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
+use MediaWiki\Extension\Script\Exceptions\ValidationException;
 use PPFrame;
 use Status;
 
@@ -23,26 +24,26 @@ abstract class BaseEngine {
 	}
 
 	/**
-	 * Validates the given source code and reports any syntax errors through
-	 * the Status object.
-	 *
-	 * @param string $source The source to evaluate
-	 * @param Status $status
-	 * @return void
-	 * @throws FFIException
-	 */
-	abstract public function validateSource( string $source, Status &$status ): void;
-
-	/**
 	 * Executes the given script.
 	 *
 	 * @param string $script The source of the script to execute
 	 * @param string $mainName The name of the main function
 	 * @param PPFrame $frame The frame to pass along to the main function
 	 * @return string The result of the script execution
-	 * @throws FFIException
+	 * @throws ScriptException
 	 */
 	abstract public function executeScript( string $script, string $mainName, PPFrame $frame ): string;
+
+	/**
+	 * Validates the given source code and reports any syntax errors through
+	 * the Status object.
+	 *
+	 * @param string $source The source to evaluate
+	 * @param Status $status
+	 * @return void
+	 * @throws ScriptException
+	 */
+	abstract public function validateSource( string $source, Status &$status ): void;
 
 	/**
 	 * Returns the human-readable name of this language. Only used for display

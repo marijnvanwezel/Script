@@ -1,9 +1,9 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki\ContentHandlers;
+namespace MediaWiki\Extension\Script\MediaWiki\ContentHandlers;
 
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\FFIServices;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\ScriptServices;
 use TextContentHandler;
 use Title;
 
@@ -25,7 +25,7 @@ class ScriptContentHandler extends TextContentHandler {
 			return false;
 		}
 
-		if ( FFIServices::getEngineStore()->getByTitle( $title ) === null ) {
+		if ( ScriptServices::getEngineStore()->getByTitle( $title ) === null ) {
 			// Disable the "script" module for pages with invalid file extensions
 			return false;
 		}

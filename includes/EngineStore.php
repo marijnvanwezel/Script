@@ -1,16 +1,16 @@
 <?php
 
-namespace MediaWiki\Extension\FFI;
+namespace MediaWiki\Extension\Script;
 
-use MediaWiki\Extension\FFI\Engines\BaseEngine;
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\Exceptions\NoSuchEngineException;
-use MediaWiki\Extension\FFI\MediaWiki\HookRunner;
+use MediaWiki\Extension\Script\Engines\BaseEngine;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\Exceptions\NoSuchEngineException;
+use MediaWiki\Extension\Script\MediaWiki\HookRunner;
 use Title;
 
 class EngineStore {
 	/**
-	 * @var array Base engines defined through $wgFFIEngines
+	 * @var array Base engines defined through $wgScriptEngines
 	 */
 	private $baseEngines;
 
@@ -20,7 +20,7 @@ class EngineStore {
 	private $hookRunner;
 
 	/**
-	 * @var array[]|void Engines defined through either $wgFFIEngines or a hook.
+	 * @var array[]|void Engines defined through either $wgScriptEngines or a hook.
 	 *  May not be initialized until EngineStore::getEngines() has been called
 	 */
 	private $engines;
@@ -110,7 +110,7 @@ class EngineStore {
 			if ( !isset( $engineSpec["class"] ) ) {
 				throw new InvalidEngineSpecificationException(
 					$ext,
-					'ffi-invalid-engine-specification-reason-missing-attribute',
+					'script-invalid-engine-specification-reason-missing-attribute',
 					['class']
 				);
 			}
@@ -120,7 +120,7 @@ class EngineStore {
 			if ( !class_exists( $engineClass ) ) {
 				throw new InvalidEngineSpecificationException(
 					$ext,
-					'ffi-invalid-engine-specification-reason-nonexistent-class',
+					'script-invalid-engine-specification-reason-nonexistent-class',
 					[$engineClass]
 				);
 			}
@@ -138,8 +138,8 @@ class EngineStore {
 	 * By default, the following engines are available:
 	 *  - "py": Python engine
 	 *
-	 * A system administrator may add or remove engines through the $wgFFIEngines configuration parameter. Extensions
-	 * may also implement additional engines through the "FFIGetEngines" hook.
+	 * A system administrator may add or remove engines through the $wgScriptEngines configuration parameter. Extensions
+	 * may also implement additional engines through the "ScriptGetEngines" hook.
 	 *
 	 * @return array
 	 */
@@ -148,7 +148,7 @@ class EngineStore {
 			// We do not directly modify $this->baseEngines here, since we do not want to allow hooks to
 			// overwrite or modify any settings a system administrator has made.
 			$hookEngines = [];
-			$this->hookRunner->onFFIGetEngines( $hookEngines );
+			$this->hookRunner->onScriptGetEngines( $hookEngines );
 
 			// Merge 2-dimensionally
 			$this->engines = wfArrayPlus2d( $this->baseEngines, $hookEngines );

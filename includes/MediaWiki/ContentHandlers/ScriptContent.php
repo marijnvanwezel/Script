@@ -1,10 +1,10 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki\ContentHandlers;
+namespace MediaWiki\Extension\Script\MediaWiki\ContentHandlers;
 
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\FFIServices;
-use MediaWiki\Extension\FFI\Views\ScriptView;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\ScriptServices;
+use MediaWiki\Extension\Script\Views\ScriptView;
 use ParserOptions;
 use ParserOutput;
 use TextContent;
@@ -33,7 +33,7 @@ class ScriptContent extends TextContent {
 			return;
 		}
 
-		$engine = FFIServices::getEngineStore()->getByTitle( $title );
+		$engine = ScriptServices::getEngineStore()->getByTitle( $title );
 		$view = new ScriptView( $title, $engine );
 
 		foreach ( $view->getIndicators() as $id => $content ) {

@@ -1,10 +1,10 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Views;
+namespace MediaWiki\Extension\Script\Views;
 
-use MediaWiki\Extension\FFI\Engines\BaseEngine;
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\Utils;
+use MediaWiki\Extension\Script\Engines\BaseEngine;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\Utils;
 use SyntaxHighlight;
 use Title;
 use Xml;
@@ -66,18 +66,18 @@ class ScriptView implements View {
 	 */
 	public function getIndicators(): ?array {
 		if ( $this->engine === null ) {
-			$text = wfMessage( 'ffi-missing-engine-indicator' )->parse();
-			return ['ffi-engine' => Xml::span( $text, 'mw-ffi-missing-engine-indicator' )];
+			$text = wfMessage( 'script-missing-engine-indicator' )->parse();
+			return ['script-engine' => Xml::span( $text, 'mw-script-missing-engine-indicator' )];
 		}
 
 		$name = $this->engine->getHumanName();
-		$content = Xml::span( $name . ' ' . $this->engine->getVersion(), 'mw-ffi-engine-name-indicator' );
+		$content = Xml::span( $name . ' ' . $this->engine->getVersion(), 'mw-script-engine-name-indicator' );
 		$helpUrl = $this->engine->getHelpUrl();
 
 		if ( $helpUrl !== null ) {
 			$attribs = [
 				'href' => $helpUrl,
-				'class' => 'mw-ffi-engine-help-link-indicator',
+				'class' => 'mw-script-engine-help-link-indicator',
 				'target' => '_blank'
 			];
 
@@ -89,21 +89,21 @@ class ScriptView implements View {
 		if ( $logo !== null ) {
 			$attribs = [
 				'src' => $logo,
-				'alt' => wfMessage( 'ffi-engine-logo-indicator-alt-text', $name )->parse(),
-				'class' => 'mw-ffi-engine-logo-indicator'
+				'alt' => wfMessage( 'script-engine-logo-indicator-alt-text', $name )->parse(),
+				'class' => 'mw-script-engine-logo-indicator'
 			];
 
 			$content = Xml::element( 'img' , $attribs, '', true ) . ' ' . $content;
 		}
 
-		return ['ffi-engine' => $content];
+		return ['script-engine' => $content];
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getModules(): array {
-		return array_merge( ['ext.ffi.ui'], $this->modules );
+		return array_merge( ['ext.script.ui'], $this->modules );
 	}
 
 	/**
@@ -113,14 +113,14 @@ class ScriptView implements View {
 	 */
 	public function getHeaderHtml(): string {
 		if ( $this->engine === null ) {
-			return wfMessage( 'ffi-missing-engine-header' )->parse();
+			return wfMessage( 'script-missing-engine-header' )->parse();
 		}
 
 		$docPage = Utils::getDocPage( $this->title );
 
 		return $docPage->exists() ?
-			wfMessage( 'ffi-doc-page-transclusion', $docPage->getFullText() )->parse() :
-			wfMessage( 'ffi-doc-page-does-not-exist', $this->engine->getHumanName(), $docPage->getFullText() )->parse();
+			wfMessage( 'script-doc-page-transclusion', $docPage->getFullText() )->parse() :
+			wfMessage( 'script-doc-page-does-not-exist', $this->engine->getHumanName(), $docPage->getFullText() )->parse();
 	}
 
 	/**

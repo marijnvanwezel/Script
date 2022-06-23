@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\FFI;
+namespace MediaWiki\Extension\Script;
 
 use Title;
 
@@ -25,7 +25,7 @@ final class Utils {
 	 * @throws Exceptions\InvalidEngineSpecificationException
 	 */
 	public static function isDocPage( Title $title, ?Title &$for = null ): bool {
-		$docSuffix = wfMessage( 'ffi-doc-page-suffix' );
+		$docSuffix = wfMessage( 'script-doc-page-suffix' );
 
 		if ( $docSuffix->isDisabled() ) {
 			return false;
@@ -35,7 +35,7 @@ final class Utils {
 			return false;
 		}
 
-		if ( FFIServices::getEngineStore()->getByName( $title->getBaseText() ) === null ) {
+		if ( ScriptServices::getEngineStore()->getByName( $title->getBaseText() ) === null ) {
 			return false;
 		}
 
@@ -54,6 +54,6 @@ final class Utils {
 	 * @return Title
 	 */
 	public static function getDocPage( Title $title ): Title {
-		return $title->getSubpage( wfMessage( 'ffi-doc-page-suffix' )->parse() );
+		return $title->getSubpage( wfMessage( 'script-doc-page-suffix' )->parse() );
 	}
 }

@@ -1,12 +1,12 @@
 {
-	"name": "FFI",
+	"name": "Script",
 	"version": "1.0.0",
-	"descriptionmsg": "ffi-desc",
+	"descriptionmsg": "script-desc",
 	"type": "parserhook",
 	"author": [
 		"Marijn van Wezel"
 	],
-	"url": "https://www.mediawiki.org/wiki/Extension:FFI",
+	"url": "https://www.mediawiki.org/wiki/Extension:Script",
 	"license-name": "GPL-2.0-or-later",
 	"requires": {
 		"MediaWiki": ">= 1.35.0",
@@ -15,18 +15,20 @@
 		}
 	},
 	"config": {
-		"FFIEngines": {
+		"ScriptEngines": {
 			"value": {
 				"py": {
-					"class": "MediaWiki\\Extension\\FFI\\Engines\\PythonStandalone\\PythonStandaloneEngine",
+					"class": "MediaWiki\\Extension\\Script\\Engines\\PythonStandalone\\PythonStandaloneEngine",
 					"disabled": false,
 					"helpUrl": "https://www.python.org/",
+					"memoryLimit": 52428800,
+					"cpuLimit": 5,
 					"pythonExecutable": "python"
 				}
 			},
 			"merge_strategy": "array_plus_2d"
 		},
-		"FFIEnableCodeEditor": {
+		"ScriptEnableCodeEditor": {
 			"value": true
 		}
 	},
@@ -35,7 +37,7 @@
 			"id": 7670,
 			"constant": "NS_SCRIPT",
 			"name": "Script",
-			"protection": "ffi-edit-script",
+			"protection": "script-edit-script",
 			"subpages": true
 		},
 		{
@@ -46,25 +48,25 @@
 		}
 	],
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\FFI\\": "includes/"
+		"MediaWiki\\Extension\\Script\\": "includes/"
 	},
 	"ContentHandlers": {
-		"script": "MediaWiki\\Extension\\FFI\\MediaWiki\\ContentHandlers\\ScriptContentHandler"
+		"script": "MediaWiki\\Extension\\Script\\MediaWiki\\ContentHandlers\\ScriptContentHandler"
 	},
 	"ExtensionMessagesFiles": {
-		"FFIMagic": "FFI.magic.php"
+		"ScriptMagic": "Script.magic.php"
 	},
 	"GroupPermissions": {
 		"*": {
-			"ffi-edit-script": true
+			"script-edit-script": true
 		}
 	},
 	"HookHandlers": {
 		"main": {
-			"class": "MediaWiki\\Extension\\FFI\\MediaWiki\\HookHandler",
+			"class": "MediaWiki\\Extension\\Script\\MediaWiki\\HookHandler",
 			"services": [
-				"FFI.EngineStore",
-				"FFI.ScriptFactory"
+				"Script.EngineStore",
+				"Script.ScriptFactory"
 			]
 		}
 	},
@@ -73,29 +75,29 @@
 		"ContentHandlerDefaultModelFor": "main",
 		"EditFilterMergedContent": "main",
 		"EditPageBeforeEditButtons": "main",
-		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\FFI\\MediaWiki\\LegacyHooks::onCodeEditorGetPageLanguage",
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\Script\\MediaWiki\\LegacyHooks::onCodeEditorGetPageLanguage",
 		"ParserFirstCallInit": "main"
 	},
 	"MessagesDirs": {
-		"FFI": [
+		"Script": [
 			"i18n"
 		]
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "modules",
-		"remoteExtPath": "FFI/modules"
+		"remoteExtPath": "Script/modules"
 	},
 	"ResourceModules": {
-		"ext.ffi.ui": {
-			"styles": "ext.ffi.ui.css"
+		"ext.script.ui": {
+			"styles": "ext.script.ui.css"
 		}
 	},
 	"ServiceWiringFiles": [
-		"FFI.wiring.php"
+		"Script.wiring.php"
 	],
 	"TrackingCategories": [
-		"ffi-error-category"
+		"script-error-category"
 	],
-	"callback": "MediaWiki\\Extension\\FFI\\MediaWiki\\LegacyHooks::onRegistration",
+	"callback": "MediaWiki\\Extension\\Script\\MediaWiki\\LegacyHooks::onRegistration",
 	"manifest_version": 2
 }

@@ -1,0 +1,12 @@
+.mw-script-engine-logo-indicator {
+    height: 20px;
+}
+
+.mw-script-engine-help-link-indicator {
+    color: #0b0080;
+}
+
+.mw-script-missing-engine-indicator {
+    color: #cc0000;
+    font-weight: bold;
+}

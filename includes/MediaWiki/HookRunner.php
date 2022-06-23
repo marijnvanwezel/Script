@@ -1,16 +1,17 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki;
+namespace MediaWiki\Extension\Script\MediaWiki;
 
-use MediaWiki\Extension\FFI\Engines\PythonStandalone\PythonStandaloneInterpreter;
-use MediaWiki\Extension\FFI\MediaWiki\Hooks\FFIGetEngines;
-use MediaWiki\Extension\FFI\MediaWiki\Hooks\FFIRegisterExternalPythonLibraries;
+use MediaWiki\Extension\Script\Engines\PythonStandalone\EngineProcess;
+use MediaWiki\Extension\Script\Engines\PythonStandalone\PythonStandaloneEngine;
+use MediaWiki\Extension\Script\MediaWiki\Hooks\ScriptGetEngines;
+use MediaWiki\Extension\Script\MediaWiki\Hooks\ScriptRegisterExternalPythonLibraries;
 use MediaWiki\HookContainer\HookContainer;
 
 /**
- * Hook runner for all FFI hooks.
+ * Hook runner for all Script hooks.
  */
-class HookRunner implements FFIGetEngines, FFIRegisterExternalPythonLibraries {
+class HookRunner implements ScriptGetEngines, ScriptRegisterExternalPythonLibraries {
 	/**
 	 * @var HookContainer
 	 */
@@ -26,14 +27,14 @@ class HookRunner implements FFIGetEngines, FFIRegisterExternalPythonLibraries {
 	/**
 	 * @inheritDoc
 	 */
-	public function onFFIGetEngines( array &$engines ) {
-		$this->container->run( 'FFIGetEngines', [&$engines] );
+	public function onScriptGetEngines( array &$engines ) {
+		$this->container->run( 'ScriptGetEngines', [&$engines] );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function onFFIRegisterExternalPythonLibraries( PythonStandaloneInterpreter $pythonInterpreter ) {
-		$this->container->run( 'FFIRegisterExternalPythonLibraries', [$pythonInterpreter] );
+	public function onScriptRegisterExternalPythonLibraries( array $libraries ) {
+		$this->container->run( 'ScriptRegisterExternalPythonLibraries', [$libraries] );
 	}
 }

@@ -1,14 +1,14 @@
 <?php
 
-namespace MediaWiki\Extension\FFI;
+namespace MediaWiki\Extension\Script;
 
-use MediaWiki\Extension\FFI\EngineStore;
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
-use MediaWiki\Extension\FFI\Exceptions\InvalidEngineSpecificationException;
-use MediaWiki\Extension\FFI\Exceptions\MissingEngineException;
-use MediaWiki\Extension\FFI\Exceptions\NoSuchScriptException;
-use MediaWiki\Extension\FFI\MediaWiki\ContentHandlers\ScriptContent;
-use MediaWiki\Extension\FFI\Engines\Script;
+use MediaWiki\Extension\Script\EngineStore;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
+use MediaWiki\Extension\Script\Exceptions\InvalidEngineSpecificationException;
+use MediaWiki\Extension\Script\Exceptions\MissingEngineException;
+use MediaWiki\Extension\Script\Exceptions\NoSuchScriptException;
+use MediaWiki\Extension\Script\MediaWiki\ContentHandlers\ScriptContent;
+use MediaWiki\Extension\Script\Engines\Script;
 use MediaWiki\Revision\RevisionRecord;
 use MWException;
 use Title;

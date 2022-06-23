@@ -1,11 +1,11 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\MediaWiki\ParserFunctions;
+namespace MediaWiki\Extension\Script\MediaWiki\ParserFunctions;
 
-use MediaWiki\Extension\FFI\EngineStore;
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
-use MediaWiki\Extension\FFI\Exceptions\NoSuchScriptException;
-use MediaWiki\Extension\FFI\ScriptFactory;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
+use MediaWiki\Extension\Script\Exceptions\MissingFunctionNameException;
+use MediaWiki\Extension\Script\Exceptions\NoSuchScriptException;
+use MediaWiki\Extension\Script\ScriptFactory;
 use Parser;
 use PPFrame;
 use Title;
@@ -16,7 +16,7 @@ use Xml;
  * Responsible for the execution of the "#script" parser function.
  */
 class ScriptParserFunction {
-	public const FFI_ERRORS_DATA_KEY = 'FFIErrors';
+	public const Script_ERRORS_DATA_KEY = 'ScriptErrors';
 
 	/**
 	 * @var ScriptFactory
@@ -41,7 +41,7 @@ class ScriptParserFunction {
 	public function execute( Parser $parser, PPFrame $frame, array $args ): string {
 		try {
 			return $this->doExecute( $frame, $args );
-		} catch ( FFIException $exception ) {
+		} catch ( ScriptException $exception ) {
 			return $this->handleException( $parser, $exception );
 		}
 	}
@@ -52,17 +52,17 @@ class ScriptParserFunction {
 	 * @param PPFrame $frame The current PPFrame
 	 * @param array $args The arguments supplied to the parser function
 	 * @return string The result of the function invocation
-	 * @throws FFIException
+	 * @throws ScriptException
 	 */
 	private function doExecute( PPFrame $frame, array $args ): string {
 		if ( count ( $args ) < 2 ) {
-			throw new FFIException( 'ffi-missing-function-name-error' );
+			throw new MissingFunctionNameException();
 		}
 
 		$scriptName = trim( $frame->expand( $args[0] ) );
 
 		if ( empty( $scriptName ) ) {
-			throw new FFIException( 'ffi-missing-function-name-error' );
+			throw new MissingFunctionNameException();
 		}
 
 		$scriptFunction = trim( $frame->expand( $args[1] ) );
@@ -82,30 +82,30 @@ class ScriptParserFunction {
 	 * Handles any exception that may have occurred during function invocation.
 	 *
 	 * @param Parser $parser The current MediaWiki parser
-	 * @param FFIException $exception The exception that has occurred
+	 * @param ScriptException $exception The exception that has occurred
 	 * @return string The error formatted as wikitext
 	 */
-	private function handleException( Parser $parser, FFIException $exception ): string {
+	private function handleException( Parser $parser, ScriptException $exception ): string {
 		$output = $parser->getOutput();
-		$errors = $output->getExtensionData( self::FFI_ERRORS_DATA_KEY );
+		$errors = $output->getExtensionData( self::Script_ERRORS_DATA_KEY );
 
 		if ( $errors === null ) {
 			// Add the tracking category only on the first error we encounter
-			$parser->addTrackingCategory( 'ffi-error-category' );
+			$parser->addTrackingCategory( 'script-error-category' );
 			$errors = [];
 		}
 
 		// Allow other extensions to process any errors that may have occurred during script invocation
 		$errors[] = $exception;
-		$output->setExtensionData( self::FFI_ERRORS_DATA_KEY, $errors );
+		$output->setExtensionData( self::Script_ERRORS_DATA_KEY, $errors );
 
 		return Xml::tags(
 			'strong',
 			['class' => 'error'],
 			Xml::span(
-				wfMessage( 'ffi-script-error-prefix' )->parse() . ' ' . $exception->getMessage(),
-				'ffi-error',
-				['id' => 'mw-ffi-error-' . count( $errors )]
+				wfMessage( 'script-error-prefix' )->parse() . ' ' . $exception->getMessage(),
+				'script-error',
+				['id' => 'mw-script-error-' . count( $errors )]
 			)
 		);
 	}

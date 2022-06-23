@@ -1,6 +1,6 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Views;
+namespace MediaWiki\Extension\Script\Views;
 
 use ParserOutput;
 

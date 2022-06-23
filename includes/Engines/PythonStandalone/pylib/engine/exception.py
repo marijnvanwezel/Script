@@ -1,6 +1,6 @@
 class EngineError(Exception):
     """Exception raised for any error that should be caught and
-    handled by the Pybunto engine.
+    handled by the engine.
 
     Attributes:
         code -- unique exception code

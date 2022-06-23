@@ -1,8 +1,8 @@
 <?php
 
-namespace MediaWiki\Extension\FFI\Engines;
+namespace MediaWiki\Extension\Script\Engines;
 
-use MediaWiki\Extension\FFI\Exceptions\FFIException;
+use MediaWiki\Extension\Script\Exceptions\ScriptException;
 use PPFrame;
 
 /**
@@ -36,7 +36,7 @@ class Script {
 	 * @param string $name The name of the function to call
 	 * @param PPFrame $frame The frame to pass to the function
 	 * @return string The result of the function invocation
-	 * @throws FFIException
+	 * @throws ScriptException
 	 */
 	public function invoke( string $name, PPFrame $frame ): string {
 		return $this->engine->executeScript( $this->source, $name, $frame );

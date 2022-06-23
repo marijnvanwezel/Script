@@ -1,29 +1,47 @@
 {
-	"name": "marijnvanwezel/mediawiki-ffi",
+	"name": "marijnvanwezel/mediawiki-script",
 	"type": "mediawiki-extension",
 	"description": "Framework for embedding multiple scripting languages into MediaWiki pages",
-	"keywords": ["mediawiki", "extension", "ffi", "python"],
+	"keywords": [
+		"mediawiki",
+		"extension",
+		"script",
+		"python",
+		"mediawiki-extension"
+	],
 	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Marijn van Wezel",
+			"homepage": "https://marijn.it",
+			"role": "Developer"
+		}
+	],
 	"require": {
 		"php": ">=7.3"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "^39.0",
-		"mediawiki/mediawiki-phan-config": "^0.11.1",
 		"mediawiki/minus-x": "^1.1",
-		"php-parallel-lint/php-console-highlighter": "^0.5.0",
-		"php-parallel-lint/php-parallel-lint": "^1.2.0"
+		"phpunit/phpunit": "^9.5",
+		"rregeer/phpunit-coverage-check": "^0.3.1",
+		"infection/infection": ">=0.17.7"
 	},
 	"scripts": {
+		"lint": [
+			"phpcs -p -s includes/ tests/phpunit/",
+			"minus-x check includes/ tests/phpunit/"
+		],
 		"test": [
-			"parallel-lint . --exclude vendor --exclude node_modules",
-			"phpcs -p -s",
-			"minus-x check ."
+			"phpunit tests/phpunit/ --coverage-clover clover.xml",
+			"coverage-check clover.xml 95",
+			"infection --show-mutations --threads=4 --only-covered"
 		],
 		"fix": [
 			"minus-x fix .",
 			"phpcbf"
-		],
-		"phan": "phan -d . --long-progress-bar"
-	}
+		]
+	},
+	"minimum-stability": "stable",
+	"prefer-stable": true
 }

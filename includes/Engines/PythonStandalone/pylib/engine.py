@@ -1,3 +1,6 @@
+import resource
+import signal
+import sys
 from engine.exception import *
 from json import loads, dumps, JSONDecodeError
 from sys import exit
@@ -15,8 +18,8 @@ class Engine:
             "exit": Engine.__handle_exit,
             "loadlibrary": Engine.__handle_load_library,
             "validate": Engine.__handle_validate,
-            "setcpulimit": Engine.__set_cpu_limit,
-            "setmemlimit": Engine.__set_mem_limit
+            "setcpulimit": Engine.__handle_set_cpu_limit,
+            "setmemlimit": Engine.__handle_set_mem_limit
         }
 
         while True:
@@ -37,32 +40,6 @@ class Engine:
                 self.__write(engine_error.to_dict())
 
 
-    def __read(self) -> dict:
-        """Reads message from STDIN and parses it"""
-        try:
-            return loads(input())
-        except JSONDecodeError:
-            raise InvalidJSONError()
-
-
-    def __write(self, message: dict) -> None:
-        """Writes message to STDOUT as JSON"""
-        print(dumps(message))
-
-
-    def __write_success(self, result: dict) -> None:
-        """Writes a "success" message to STDOUT as JSON"""
-        self.__write({
-            "status": "success",
-            "result": result
-        })
-
-
-    def __dispatch(self, message: dict) -> dict:
-        """Dispatches a message, waits for the response, and returns that"""
-        self.__write(message)
-        return self.__read()
-
 
     def __handle_exit(self, message: dict) -> dict:
         """Handle the 'exit' opcode"""
@@ -70,7 +47,7 @@ class Engine:
 
 
     def __handle_load_library(self, message: dict) -> dict:
-        """Handle the 'load_library' opcode"""
+        """Handle the 'loadlibrary' opcode"""
         if "library_path" not in message:
             raise MissingAttributeError("library_path")
 
@@ -109,7 +86,44 @@ class Engine:
         except CompilationError as error:
             return {'valid': False, 'errors': error.errors}
 
-        return {'valid': True}
+        return {'valid': True, 'errors': {}}
+
+
+    def __handle_set_cpu_limit(self, message: dict) -> dict:
+        """Handle the 'setcpulimit' opcode"""
+        if "limit" not in message:
+            raise MissingAttributeError("limit")
+
+        limit = message["limit"]
+
+        if not isinstance(limit, int):
+            raise InvalidAttributeError("limit", "'limit' must be of type 'int'")
+
+        _, hard = resource.getrlimit(resource.RLIMIT_CPU)
+
+        # Set the "soft" limit of the resource, so we can still implement some appropriate
+        # handling.
+        resource.setrlimit(resource.RLIMIT_CPU, (limit, hard))
+
+        # Whenever the soft limit set above is exceeded, a SIGXCPU is sent to the engine.
+        # We set a function to handle this interrupt.
+        signal.signal(signal.SIGXCPU, self.__handle_sigxcpu)
+
+        return {}
+
+
+    def __handle_set_mem_limit(self, message: dict) -> dict:
+        """Handle the 'setmemlimit' opcode"""
+        if "limit" not in message:
+            raise MissingAttributeError("limit")
+
+        limit = message["limit"]
+
+        if not isinstance(limit, int):
+            raise InvalidAttributeError("limit", "'limit' must be of type 'int'")
+
+        _, hard = resource.getrlimit(resource.RLIMIT_AS)
+        resource.setrlimit(resource.RLIMIT_AS, (limit, hard))
 
 
     def __load_library(self, source: str, name: str) -> None:
@@ -185,6 +199,43 @@ class Engine:
         exec(code, compiler.safe_globals.copy(), local_env)
 
         return local_env
+
+
+    def __handle_sigxcpu(self) -> None:
+        """Handles the SIGXCPU interrupt"""
+        self.__write({
+            'success': False,
+            'code': 99 
+        })
+
+        sys.exit(1)
+
+
+    def __read(self) -> dict:
+        """Reads message from STDIN and parses it"""
+        try:
+            return loads(input())
+        except JSONDecodeError:
+            raise InvalidJSONError()
+
+
+    def __write(self, message: dict) -> None:
+        """Writes message to STDOUT as JSON"""
+        print(dumps(message))
+
+
+    def __write_success(self, result: dict) -> None:
+        """Writes a "success" message to STDOUT as JSON"""
+        self.__write({
+            "status": "success",
+            "result": result
+        })
+
+
+    def __dispatch(self, message: dict) -> dict:
+        """Dispatches a message, waits for the response, and returns that"""
+        self.__write(message)
+        return self.__read()
 
 
 
